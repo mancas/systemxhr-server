@@ -1,0 +1,26 @@
+{
+  "version": "0.1.0",
+  "name": "SystemXHRService",
+  "description": "SystemXHR Service",
+  "type": "certified",
+  "launch_path": "/systemxhr-server/index.html",
+  "icons": {
+    "16": "/systemxhr-server/common/style/icons/icon.png",
+    "48": "/systemxhr-server/common/style/icons/icon.png",
+    "60": "/systemxhr-server/common/style/icons/icon.png",
+    "128": "/systemxhr-server/common/style/icons/icon.png"
+  },
+  "connections": {
+    "https://systemxhrservice.gaiamobile.org": {
+      "description": "Test SHIM IAC - SystemXHR Service",
+      "rules": {}
+    }
+  },
+  "permissions": {
+    "systemXHR": {}
+  },
+  "installs_allowed_from": [
+    "*"
+  ]
+}
+
