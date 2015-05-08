@@ -7,7 +7,7 @@
 // ADDED FOR POLYFILL
 
 function debug(str) {
-  console.log('Setting Service SW -*- -->' + str);
+  console.log('SYSTEM XHR Service SW -*- -->' + str);
 }
 
 // ADDED FOR POLYFILL: Import the polyfill script
