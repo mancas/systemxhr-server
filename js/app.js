@@ -47,14 +47,14 @@ console.info(JSON.stringify(evt.data));
       _XMLHttpRequests[requestOp.xhrId].onchange = listenerTemplate;
     } else if (requestOp.operation === 'addEventListener') {
       _listeners[request.id] = listenerTemplate;
-      _deviceStorages[requestOp.deviceStorageId].
+      _XMLHttpRequests[requestOp.deviceStorageId].
         addEventListener(requestOp.type, _listeners[request.id],
         requestOp.useCapture);
     } else if (requestOp.operation === 'removeEventListener') {
-      _deviceStorages[requestOp.deviceStorageId].
+      _XMLHttpRequests[requestOp.deviceStorageId].
         removeObserver(_listeners[request.id]);
     } else if (requestOp.operation === 'dispatchEvent') {
-      _deviceStorages[requestOp.deviceStorageId].dispatchEvent(requestOp.event);
+      _XMLHttpRequests[requestOp.deviceStorageId].dispatchEvent(requestOp.event);
     } else {
       var method = 'call';
       if (requestOp.params && typeof requestOp.params === 'object') {
