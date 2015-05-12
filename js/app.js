@@ -31,6 +31,10 @@
       for (var key in obj) {
         if (typeof obj[key] !== 'object' && typeof obj[key] !== 'function') {
           cloned[key] = obj[key];
+        } else {
+          if (typeof obj[key] === 'object') {
+            cloned[key] = _cloneObject(obj[key]);
+          }
         }
       }
 console.info(cloned);
