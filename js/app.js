@@ -33,7 +33,7 @@
           cloned[key] = obj[key];
         }
       }
-
+console.info(cloned);
       return cloned;
     }
 
