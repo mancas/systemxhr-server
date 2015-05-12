@@ -29,7 +29,7 @@
     function _cloneObject(obj) {
       var cloned = {};
       for (var key in obj) {
-        console.info(typeof obj[key], key);
+        console.info(typeof obj[key] !== 'object' || typeof obj[key] !== 'function', key);
         if (typeof obj[key] !== 'object' || typeof obj[key] !== 'function') {
           cloned[key] = obj[key];
         }
