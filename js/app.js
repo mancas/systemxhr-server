@@ -37,7 +37,7 @@
         }
       });
     }
-
+console.info(JSON.stringify(evt.data));
     if (requestOp.operation === 'createXMLHttpRequest') {
       _XMLHttpRequests[request.id] = new XMLHttpRequest(requestOp.options);
       console.info(_XMLHttpRequests);
