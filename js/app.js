@@ -59,7 +59,7 @@ console.info(JSON.stringify(evt.data));
       // Let's assume this works always...
       channel.postMessage({remotePortId: remotePortId, data: {id: request.id}});
     } else if (requestOp.operation === 'onreadystatechange') {
-      _XMLHttpRequests[requestOp.xhrId].onchange = listenerTemplate;
+      _XMLHttpRequests[requestOp.xhrId].onreadystatechange = listenerTemplate;
     } else if (requestOp.operation === 'addEventListener') {
       _listeners[request.id] = listenerTemplate;
       _XMLHttpRequests[requestOp.xhrId].
