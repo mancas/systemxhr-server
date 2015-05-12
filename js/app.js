@@ -26,15 +26,24 @@
     var request = evt.data.remoteData;
     var requestOp = request.data;
 
+    function _cloneObject(obj) {
+      var cloned = {};
+      for (var key in obj) {
+        if (typeof obj[key] !== 'object' || typeof obj[key] !== 'function') {
+          cloned[key] = obj[key];
+        }
+      }
+
+      return cloned;
+    }
+
     function listenerTemplate(evt) {
       console.info(evt);
       channel.postMessage({
         remotePortId: remotePortId,
         data: {
           id: request.id,
-          data: {
-            event: JSON.stringify(evt)
-          }
+          data: _cloneObject(evt)
         }
       });
     }
