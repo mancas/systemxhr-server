@@ -27,12 +27,13 @@
     var requestOp = request.data;
 
     function listenerTemplate(evt) {
+      console.info(evt);
       channel.postMessage({
         remotePortId: remotePortId,
         data: {
           id: request.id,
           data: {
-            event: evt
+            event: JSON.stringify(evt)
           }
         }
       });
