@@ -2,7 +2,7 @@
   'use strict';
 
   function debug(str) {
-    console.log('MANU SystemXHRService -*-:' + str);
+    console.log('SystemXHRService -*-:' + str);
   }
 
   // Ok, this kinda sucks because most APIs (and settings is one of them) cannot
@@ -15,7 +15,7 @@
   var processSWRequest = function(channel, evt) {
     // We can get:
     // * methodName
-    // * TODO on events
+    // * onpropertychange
     // * createXMLHttpRequest
     // * addEventListener
     // * removeEventListener
@@ -26,40 +26,27 @@
     var request = evt.data.remoteData;
     var requestOp = request.data;
 
-    function _cloneObject(obj) {
-      var cloned = {};
-      for (var key in obj) {
-        if ((typeof obj[key] !== 'object' && typeof obj[key] !== 'function') ||
-          obj[key] === null) {
-            cloned[key] = obj[key];
-        } else {
-          if (typeof obj[key] === 'object') {
-            cloned[key] = _cloneObject(obj[key]);
-          }
-        }
-      }
-console.info(cloned);
-      return cloned;
-    }
-
     function listenerTemplate(evt) {
-      console.info(evt);
+      var clonedEvent = window.ServiceHelper.cloneObject(evt);
+      clonedEvent.allResponseHeaders = evt.target.getAllResponseHeaders();
+      console.info(clonedEvent);
       channel.postMessage({
         remotePortId: remotePortId,
         data: {
           id: request.id,
-          data: _cloneObject(evt)
+          event: clonedEvent
         }
       });
     }
-console.info(JSON.stringify(evt.data));
+
     if (requestOp.operation === 'createXMLHttpRequest') {
       _XMLHttpRequests[request.id] = new XMLHttpRequest(requestOp.options);
-      console.info(_XMLHttpRequests);
       // Let's assume this works always...
       channel.postMessage({remotePortId: remotePortId, data: {id: request.id}});
     } else if (requestOp.operation === 'onreadystatechange') {
       _XMLHttpRequests[requestOp.xhrId].onreadystatechange = listenerTemplate;
+    } else if (requestOp.operation === 'onpropertychange') {
+      _XMLHttpRequests[requestOp.xhrId][requestOp.handler] = listenerTemplate;
     } else if (requestOp.operation === 'addEventListener') {
       _listeners[request.id] = listenerTemplate;
       _XMLHttpRequests[requestOp.xhrId].
