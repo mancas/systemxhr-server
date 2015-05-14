@@ -34,7 +34,7 @@
       headers.forEach(header => {
         var trimeHeader = header.trim();
         var split = trimeHeader.split(':');
-        obj[split[0]] = split[1];
+        obj[split[0].trim()] = split[1].trim();
       });
 
       return obj;
