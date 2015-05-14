@@ -43,17 +43,17 @@
   // Circular objects will cause this to hang
   var cloneObject = function(obj) {
     var cloned = {};
-      for (var key in obj) {
-        if (typeof obj[key] === 'object') {
-          cloned[key] = obj[key];
-          continue;
-        }
-
-        if (typeof obj[key] !== 'function') {
-          cloned[key] = obj[key];
-        }
+    for (var key in obj) {
+      if (typeof obj[key] === 'object') {
+        cloned[key] = _cloneObject(obj[key]);
+        continue;
       }
-      return cloned;
+
+      if (typeof obj[key] !== 'function' || obj[key] === null) {
+          cloned[key] = obj[key];
+      }
+    }
+    return cloned;
   };
 
 if ('serviceWorker' in navigator) {
