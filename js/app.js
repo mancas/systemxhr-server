@@ -27,7 +27,7 @@
     var requestOp = request.data;
 
     function _buildResponseHeadersObject(responseHeaders) {
-      var headers = responseHeaders.split(\/n\);
+      var headers = responseHeaders.split(/\n/);
       var obj = {};
       // Last item is useless
       headers.pop();
