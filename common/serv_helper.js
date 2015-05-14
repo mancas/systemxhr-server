@@ -45,7 +45,7 @@
     var cloned = {};
     for (var key in obj) {
       if (typeof obj[key] === 'object') {
-        cloned[key] = _cloneObject(obj[key]);
+        cloned[key] = cloneObject(obj[key]);
         continue;
       }
 
