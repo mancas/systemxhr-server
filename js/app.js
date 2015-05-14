@@ -26,11 +26,26 @@
     var request = evt.data.remoteData;
     var requestOp = request.data;
 
+    function _buildResponseHeadersObject(responseHeaders) {
+      var headers = responseHeaders.split(\/n\);
+      var obj = {};
+      // Last item is useless
+      headers.pop();
+      headers.forEach(header => {
+        var trimeHeader = header.trim();
+        var split = trimeHeader.split(':');
+        obj[split[0]] = split[1];
+      });
+
+      return obj;
+    }
+
     function listenerTemplate(evt) {
-console.info(evt.target.readyState);
       var clonedEvent = window.ServiceHelper.cloneObject(evt);
       clonedEvent.allResponseHeaders = evt.target.getAllResponseHeaders();
-console.info(clonedEvent);
+      clonedEvent.responseHeaders =
+        _buildResponseHeadersObject(clonedEvent.allResponseHeaders);
+console.info(JSON.stringify(clonedEvent.responseHeaders));
       channel.postMessage({
         remotePortId: remotePortId,
         data: {
@@ -45,7 +60,6 @@ console.info(clonedEvent);
       // Let's assume this works always...
       channel.postMessage({remotePortId: remotePortId, data: {id: request.id}});
     } else if (requestOp.operation === 'onreadystatechange') {
-      console.info('onreadystatechange');
       _XMLHttpRequests[requestOp.xhrId].onreadystatechange = listenerTemplate;
     } else if (requestOp.operation === 'onpropertychange') {
       _XMLHttpRequests[requestOp.xhrId][requestOp.handler] = listenerTemplate;
