@@ -57,8 +57,8 @@ console.info(clonedEvent);
     } else if (requestOp.operation === 'dispatchEvent') {
       _XMLHttpRequests[requestOp.xhrId].dispatchEvent(requestOp.event);
     } else {
-      _XMLHttpRequests[requestOp.xhrId][requestOp.operation].
-        apply(...requestOp.params);
+      _XMLHttpRequests[requestOp.xhrId][requestOp.operation]
+        (...requestOp.params);
     }
   };
 
