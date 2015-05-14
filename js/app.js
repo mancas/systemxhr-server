@@ -2,7 +2,7 @@
   'use strict';
 
   function debug(str) {
-    console.log('SystemXHRService -*-:' + str);
+    console.log('MANU SystemXHRService -*-:' + str);
   }
 
   // Ok, this kinda sucks because most APIs (and settings is one of them) cannot
@@ -29,7 +29,7 @@
     function listenerTemplate(evt) {
       var clonedEvent = window.ServiceHelper.cloneObject(evt);
       clonedEvent.allResponseHeaders = evt.target.getAllResponseHeaders();
-      console.info(clonedEvent);
+console.info(clonedEvent);
       channel.postMessage({
         remotePortId: remotePortId,
         data: {
@@ -57,12 +57,8 @@
     } else if (requestOp.operation === 'dispatchEvent') {
       _XMLHttpRequests[requestOp.xhrId].dispatchEvent(requestOp.event);
     } else {
-      var method = 'call';
-      if (requestOp.params && typeof requestOp.params === 'object') {
-        method = 'apply';
-      }
-      _XMLHttpRequests[requestOp.xhrId][requestOp.operation]
-        [method](_XMLHttpRequests[requestOp.xhrId], requestOp.params);
+      _XMLHttpRequests[requestOp.xhrId][requestOp.operation].
+        apply(...requestOp.params);
     }
   };
 
