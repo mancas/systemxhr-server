@@ -27,6 +27,7 @@
     var requestOp = request.data;
 
     function listenerTemplate(evt) {
+console.info(evt.target.readyState);
       var clonedEvent = window.ServiceHelper.cloneObject(evt);
       clonedEvent.allResponseHeaders = evt.target.getAllResponseHeaders();
 console.info(clonedEvent);
@@ -44,6 +45,7 @@ console.info(clonedEvent);
       // Let's assume this works always...
       channel.postMessage({remotePortId: remotePortId, data: {id: request.id}});
     } else if (requestOp.operation === 'onreadystatechange') {
+      console.info('onreadystatechange');
       _XMLHttpRequests[requestOp.xhrId].onreadystatechange = listenerTemplate;
     } else if (requestOp.operation === 'onpropertychange') {
       _XMLHttpRequests[requestOp.xhrId][requestOp.handler] = listenerTemplate;
