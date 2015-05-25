@@ -12,6 +12,17 @@
   var _XMLHttpRequests = {};
   var _listeners = {};
 
+  var onChangeEvents = [
+      'onabort',
+      'onerror',
+      'onload',
+      'onloadend',
+      'onloadstart',
+      'onprogress',
+      'ontimeout',
+      'onreadystatechange'
+    ];
+
   var processSWRequest = function(channel, evt) {
     // We can get:
     // * methodName
@@ -41,11 +52,9 @@
     }
 
     function listenerTemplate(evt) {
-      var clonedEvent = window.ServiceHelper.cloneObject(evt);
-      clonedEvent.allResponseHeaders = evt.target.getAllResponseHeaders();
+      var clonedEvent = window.ServiceHelper.cloneObject(evt, true);
       clonedEvent.responseHeaders =
-        _buildResponseHeadersObject(clonedEvent.allResponseHeaders);
-console.info(JSON.stringify(clonedEvent.responseHeaders));
+        _buildResponseHeadersObject(evt.target.getAllResponseHeaders());
       channel.postMessage({
         remotePortId: remotePortId,
         data: {
@@ -59,17 +68,16 @@ console.info(JSON.stringify(clonedEvent.responseHeaders));
       _XMLHttpRequests[request.id] = new XMLHttpRequest(requestOp.options);
       // Let's assume this works always...
       channel.postMessage({remotePortId: remotePortId, data: {id: request.id}});
-    } else if (requestOp.operation === 'onreadystatechange') {
-      _XMLHttpRequests[requestOp.xhrId].onreadystatechange = listenerTemplate;
-    } else if (requestOp.operation === 'onpropertychange') {
-      _XMLHttpRequests[requestOp.xhrId][requestOp.handler] = listenerTemplate;
+    } else if (onChangeEvents.indexOf(requestOp.operation) !== -1) {
+      _XMLHttpRequests[requestOp.xhrId][requestOp.operation] = listenerTemplate;
     } else if (requestOp.operation === 'addEventListener') {
       _listeners[request.id] = listenerTemplate;
       _XMLHttpRequests[requestOp.xhrId].
         addEventListener(requestOp.type, _listeners[request.id],
         requestOp.useCapture);
     } else if (requestOp.operation === 'removeEventListener') {
-      _XMLHttpRequests[requestOp.xhrId].removeObserver(_listeners[request.id]);
+      _XMLHttpRequests[requestOp.xhrId].removeObserver
+        (_listeners[requestOp.listenerId]);
     } else if (requestOp.operation === 'dispatchEvent') {
       _XMLHttpRequests[requestOp.xhrId].dispatchEvent(requestOp.event);
     } else {
