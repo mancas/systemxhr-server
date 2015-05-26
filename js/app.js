@@ -113,16 +113,15 @@
     // All the operations have a requestId, and all the operations over
     // a XMLHttpRequest also include a xhr id.
     var request = evt.data.remoteData;
-    var requestOp = request.data;
+    var requestOp = request.data.operation;
 
     debug('processSWRequest --> processing a msg:' +
           (evt.data ? JSON.stringify(evt.data): 'msg without data'));
-
     if (requestOp in _operations) {
       _operations[requestOp] &&
         _operations[requestOp](channel, evt.data);
     } else {
-      console.error('SMS service unknown operation:' + requestOp.op);
+      console.error('SystemXHR service unknown operation:' + requestOp);
     }
   };
 
