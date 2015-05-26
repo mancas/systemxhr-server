@@ -26,14 +26,14 @@
   function executeOperation(operation, channel, request) {
     // Params for the local operation:
     var opData = request.remoteData.data.params || [];
-    var xhrId = request.remoteData.xhrId;
+    var xhrId = request.remoteData.data.xhrId;
     _XMLHttpRequests[xhrId][operation](...opData.params);
   }
 
   function setHandler(eventType, channel, request) {
     var remotePortId = request.remotePortId;
     var reqId = request.remoteData.id;
-    var xhrId = request.remoteData.xhrId;
+    var xhrId = request.remoteData.data.xhrId;
 
     function _buildResponseHeadersObject(responseHeaders) {
       var headers = responseHeaders.split(/\n/);
@@ -68,7 +68,7 @@
   function addEventTargetEvent(channel, request) {
     var requestOp = request.remoteData.data;
     var reqId = request.remoteData.id;
-    var xhrId = request.remoteData.xhrId;
+    var xhrId = request.remoteData.data.xhrId;
 
     function listenerTemplate(evt) {
       channel.postMessage({
@@ -102,13 +102,13 @@
 
     removeEventListener: function(channel, request) {
       var requestOp = request.remoteData.data;
-      var xhrId = request.remoteData.xhrId;
+      var xhrId = request.remoteData.data.xhrId;
       _XMLHttpRequests[xhrId].removeObserver(_listeners[requestOp.listenerId]);
     },
 
     dispatchEvent: function(channel, request) {
       var requestOp = request.remoteData.data;
-      var xhrId = request.remoteData.xhrId;
+      var xhrId = request.remoteData.data.xhrId;
       _XMLHttpRequests[xhrId].dispatchEvent(requestOp.event);
     }
   };
