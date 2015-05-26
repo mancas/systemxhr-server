@@ -16,6 +16,7 @@
     debug('Building call --> ' + JSON.stringify(request));
     var remotePortId = request.remotePortId;
     var reqId = request.remoteData.id;
+    var requestOp = request.remoteData.data;
 
     _XMLHttpRequests[reqId] = new XMLHttpRequest(requestOp.options);
     // Let's assume this works always...
