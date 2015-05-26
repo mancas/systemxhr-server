@@ -27,7 +27,7 @@
     // Params for the local operation:
     var opData = request.remoteData.data.params || [];
     var xhrId = request.remoteData.data.xhrId;
-    _XMLHttpRequests[xhrId][operation](...opData.params);
+    _XMLHttpRequests[xhrId][operation](...opData);
   }
 
   function setHandler(eventType, channel, request) {
