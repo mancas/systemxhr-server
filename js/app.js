@@ -14,25 +14,25 @@
 
   function buildDOMRequestAnswer(channel, request) {
     debug('Building call --> ' + JSON.stringify(request));
-    var remotePortId = evt.data.remotePortId;
-    var request = evt.data.remoteData;
-    var requestOp = request.data;
+    var remotePortId = request.remotePortId;
+    var reqId = request.remoteData.id;
 
-    _XMLHttpRequests[request.id] = new XMLHttpRequest(requestOp.options);
+    _XMLHttpRequests[reqId] = new XMLHttpRequest(requestOp.options);
     // Let's assume this works always...
-    channel.postMessage({remotePortId: remotePortId, data: {id: request.id}});
+    channel.postMessage({remotePortId: remotePortId, data: {id: reqId}});
   }
 
   function executeOperation(operation, channel, request) {
-    var request = evt.data.remoteData;
-    var requestOp = request.data;
-    _XMLHttpRequests[requestOp.xhrId][operation](...requestOp.params);
+    // Params for the local operation:
+    var opData = request.remoteData.data.params || [];
+    var xhrId = request.remoteData.xhrId;
+    _XMLHttpRequests[xhrId][operation](...opData.params);
   }
 
   function setHandler(eventType, channel, request) {
-    var remotePortId = evt.data.remotePortId;
-    var request = evt.data.remoteData;
-    var requestOp = request.data;
+    var remotePortId = request.remotePortId;
+    var reqId = request.remoteData.id;
+    var xhrId = request.remoteData.xhrId;
 
     function _buildResponseHeadersObject(responseHeaders) {
       var headers = responseHeaders.split(/\n/);
@@ -48,21 +48,41 @@
       return obj;
     }
 
-    function listenerTemplate(evt) {
+    function onChangeTemplate(evt) {
       var clonedEvent = window.ServiceHelper.cloneObject(evt, true);
       clonedEvent.responseHeaders =
         _buildResponseHeadersObject(evt.target.getAllResponseHeaders());
       channel.postMessage({
         remotePortId: remotePortId,
         data: {
-          id: request.id,
+          id: reqId,
           event: clonedEvent
         }
       });
     }
 
-    _XMLHttpRequests[requestOp.xhrId][requestOp.operation] = listenerTemplate;
+    _XMLHttpRequests[xhrId][eventType] = onChangeTemplate;
   };
+
+  function addEventTargetEvent(channel, request) {
+    var requestOp = request.remoteData.data;
+    var reqId = request.remoteData.id;
+    var xhrId = request.remoteData.xhrId;
+
+    function listenerTemplate(evt) {
+      channel.postMessage({
+        remotePortId: remotePortId,
+        data: {
+          id: reqId,
+          event: window.ServiceHelper.cloneObject(evt, true)
+        }
+      });
+    }
+
+    _listeners[reqId] = listenerTemplate;
+    _XMLHttpRequests[xhrId].addEventListener(requestOp.type,
+      _listeners[reqId], requestOp.useCapture);
+  }
 
   var _operations = {
     createXMLHttpRequest: buildDOMRequestAnswer.bind(this),
@@ -77,24 +97,18 @@
 
     setRequestHeader: executeOperation.bind(this, 'setRequestHeader'),
 
-    addEventListener: function(channel, request) {
-      var request = evt.data.remoteData;
-      var requestOp = request.data;
-      _listeners[request.id] = listenerTemplate;
-      _XMLHttpRequests[requestOp.xhrId].
-        addEventListener(requestOp.type, _listeners[request.id],
-        requestOp.useCapture);
-    },
+    addEventListener: addEventTargetEvent.bind(this),
 
     removeEventListener: function(channel, request) {
-      var requestOp = evt.data.remoteData.data;
-      _XMLHttpRequests[requestOp.xhrId].removeObserver
-        (_listeners[requestOp.listenerId]);
+      var requestOp = request.remoteData.data;
+      var xhrId = request.remoteData.xhrId;
+      _XMLHttpRequests[xhrId].removeObserver(_listeners[requestOp.listenerId]);
     },
 
     dispatchEvent: function(channel, request) {
-      var requestOp = evt.data.remoteData.data;
-      _XMLHttpRequests[requestOp.xhrId].dispatchEvent(requestOp.event);
+      var requestOp = request.remoteData.data;
+      var xhrId = request.remoteData.xhrId;
+      _XMLHttpRequests[xhrId].dispatchEvent(requestOp.event);
     }
   };
   ['onabort', 'onerror', 'onload', 'onloadend', 'onloadstart', 'onprogress',
