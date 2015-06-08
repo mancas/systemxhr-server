@@ -151,6 +151,7 @@
           forbidden = constraints.indexOf(request.data.params[0]) === -1;
           break;
       }
+      console.info(forbidden);
       return forbidden;
     };
 
