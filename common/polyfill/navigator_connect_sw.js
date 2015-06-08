@@ -1,6 +1,5 @@
-'use strict';
-
 (function(sw) {
+  'use strict';
 
   // It's not good trying to load this twice
   if (sw.NCPolyfill) {
@@ -8,7 +7,7 @@
   }
 
   function debug(str) {
-    // console.log("NC Polyfill (SW) -*-:" + str);
+    console.log('NC Polyfill (SW) -*-:' + str);
   }
 
   debug('Loaded!');
@@ -23,7 +22,7 @@
   // onconnect handler expect, and invokes the adequate handler. The only
   // messages passed this way are the connection ones!
   function transmitMessage(evt) {
-    debug('executing transmitMessage...');
+    debug('Executing transmitMessage...');
 
     // In theory,
     // evt.ports[0] should correspond to the MessagePort that was transferred
@@ -56,7 +55,7 @@
       }
       aPromise.then(accepted => {
         debug('acceptConnection accepted:' + accepted);
-        connectionMessage.source.postMessage({accepted: accepted});
+        connectionMessage.source.postMessage({ accepted: accepted });
         // Now if we've *not* accepted the connection, we can clean up here
         if (!accepted) {
           delete connectionMessage.source;
@@ -64,8 +63,8 @@
       });
     };
 
-    if (sw.onconnect && typeof sw.onconnect == "function") {
-      debug('executing onConnect with --> ' +
+    if (sw.onconnect && typeof sw.onconnect === 'function') {
+      debug('Executing onConnect with --> ' +
             JSON.stringify(connectionMessage));
       sw.onconnect(connectionMessage);
     }

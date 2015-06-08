@@ -2,7 +2,7 @@
   'use strict';
 
   function debug(str) {
-    console.log('MANU SystemXHRService -*-:' + str);
+    console.log('SystemXHRService -*-:' + str);
   }
 
   // Ok, this kinda sucks because most APIs (and settings is one of them) cannot
@@ -17,7 +17,6 @@
     var remotePortId = request.remotePortId;
     var reqId = request.remoteData.id;
     var requestOp = request.remoteData.data;
-
     _XMLHttpRequests[reqId] = new XMLHttpRequest(requestOp.options);
     // Let's assume this works always...
     channel.postMessage({remotePortId: remotePortId, data: {id: reqId}});
@@ -27,6 +26,10 @@
     // Params for the local operation:
     var opData = request.remoteData.data.params || [];
     var xhrId = request.remoteData.data.xhrId;
+    if (operation === 'open' && opData[2] === null ||
+        typeof opData[2] === 'undefined') {
+        opData[2] = true;
+    }
     _XMLHttpRequests[xhrId][operation](...opData);
   }
 
@@ -98,12 +101,19 @@
 
     setRequestHeader: executeOperation.bind(this, 'setRequestHeader'),
 
+    set: function(channel, request) {
+      var xhrId = request.remoteData.data.xhrId;
+      var opData = request.remoteData.data.params;
+      _XMLHttpRequests[xhrId][opData[0]] = opData[1];
+    },
+
     addEventListener: addEventTargetEvent.bind(this),
 
     removeEventListener: function(channel, request) {
       var requestOp = request.remoteData.data;
       var xhrId = request.remoteData.data.xhrId;
-      _XMLHttpRequests[xhrId].removeObserver(_listeners[requestOp.listenerId]);
+      _XMLHttpRequests[xhrId].removeEventListener(
+        _listeners[requestOp.listenerId]);
     },
 
     dispatchEvent: function(channel, request) {
@@ -117,7 +127,7 @@
       _operations[evt] = setHandler.bind(undefined, evt);
   });
 
-  var processSWRequest = function(channel, evt) {
+  var processSWRequest = function(aAcl, aChannel, aEvt) {
     // We can get:
     // * methodName
     // * onpropertychange
@@ -127,14 +137,33 @@
     // * dispatchEvent
     // All the operations have a requestId, and all the operations over
     // a XMLHttpRequest also include a xhr id.
-    var request = evt.data.remoteData;
+    var request = aEvt.data.remoteData;
     var requestOp = request.data.operation;
+    var targetURL = aEvt.data.targetURL;
+
+    // TODO: Add resource access constraint
+    // It should return true if resource access is forbidden,
+    // false if it's allowed
+    var forbidCall = function(constraints) {
+      var forbidden = false;
+      switch(requestOp) {
+        case 'set':
+          forbidden = constraints.indexOf(request.data.params[0]) === -1;
+          break;
+      }
+      return forbidden;
+    };
+
+    if (window.ServiceHelper.isForbidden(aAcl, targetURL, requestOp,
+                                         forbidCall)) {
+      return;
+    }
 
     debug('processSWRequest --> processing a msg:' +
-          (evt.data ? JSON.stringify(evt.data): 'msg without data'));
+          (aEvt.data ? JSON.stringify(aEvt.data): 'msg without data'));
     if (requestOp in _operations) {
       _operations[requestOp] &&
-        _operations[requestOp](channel, evt.data);
+        _operations[requestOp](aChannel, aEvt.data);
     } else {
       console.error('SystemXHR service unknown operation:' + requestOp);
     }
