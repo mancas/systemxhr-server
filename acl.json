@@ -1,9 +1,7 @@
 {
   "Internal Tests": {
     "allowedOrigins": [
-      "^https://.*\\.telefonica\\.com/WebAPI_pf.*",
-      "^https://.*\\.github\\.io/WebAPI_pf.*",
-      "^https://.*\\.github\\.io/hosted-apps-pf.*",
+      ".*"
     ],
     "rules": {
       "createXMLHttpRequest": [],
