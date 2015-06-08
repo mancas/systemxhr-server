@@ -1,0 +1,38 @@
+{
+  "Internal Tests": {
+    "allowedOrigins": [
+      "^https://.*\\.telefonica\\.com/WebAPI_pf.*",
+      "^https://.*\\.github\\.io/WebAPI_pf.*"
+    ],
+    "rules": {
+      "createXMLHttpRequest": [],
+      "abort": [],
+      "open": [],
+      "overrideMimeType": [],
+      "send": [],
+      "setRequestHeader": [],
+      "onreadystatechange": [],
+      "set": [
+        "response",
+        "responseText",
+        "responseType",
+        "responseXML",
+        "status",
+        "statusText",
+        "readyState",
+        "timeout",
+        "responseURL"
+      ],
+      "onabort": [],
+      "onerror": [],
+      "onload": [],
+      "onloadend": [],
+      "onloadstart": [],
+      "onprogress": [],
+      "ontimeout": [],
+      "addEventListener": [],
+      "removeEventListener": [],
+      "dispatchEvent": []
+    }
+  }
+}
